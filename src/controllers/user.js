@@ -11,7 +11,7 @@ const schema = Joi.object({
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
 });
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     res.send('OK');
 });
 
@@ -24,11 +24,17 @@ router.post('/', async (req, res) => {
 
         if (error) return res.status(400).send(`Body invalid: ${error.details[0].message}`);
 
-        const user = await UserSchema.create(req.params);
+        const {email} = body;
+
+        const x = await UserSchema.find({'User.email': email});
+
+        console.log(x);
+
+        const user = await UserSchema.create(body);
 
         res.status(201).send({user})
     } catch {
-
+        res.status(400).send({error: 'Error : Registration falied'});
     }
 });
 
